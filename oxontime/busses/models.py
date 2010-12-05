@@ -25,6 +25,10 @@ class Bus(models.Model):
 
   location = models.PointField(srid=27700)
 
+  @property
+  def wgs84(self):
+      return self.location.transform(4326, clone=True)
+
   def save(self, *args, **kwargs):
       x = OFFSET_X + (self.region.x * 418 + self.x) * SCALE_X
       y = OFFSET_Y - (self.region.y * 418 + self.y) * SCALE_Y
