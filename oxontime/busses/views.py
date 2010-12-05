@@ -5,6 +5,8 @@ from models import *
 from datetime import datetime,date
 from django.conf import settings
 
+from oxontime.utils.views import BaseView
+
 xsize = 69
 ysize = 92
 def home(request):
@@ -26,6 +28,16 @@ def home(request):
     table += "  </tr>\n"
   table += "</table>\n"
   return render_to_response('home.fbml', {'table': table})
+
+class ListServicesView(BaseView):
+    def initial_context(self, request):
+        services = sorted(set(b.service for b in Bus.objects.all()))
+        return {
+            'services': services,
+        }
+
+    def handle_GET(self, request, context):
+        return self.render(request, context, 'service-list')
 
 def kml(request):
     out = []
