@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    {% for service_id, service_d in services.items %}
+        <Folder>
+          <name>Service {{ service_id }}</name>
+          {% for vehicle_id, points in service_d.items %}
+            <Placemark id="{{ points.0.pk }}">
+              <name>{{ service_id }}</name>
+              <description>Vehicle ID: {{ vehicle_id }}, last updated: {{ points.0.updated }}</description>
+              <Style> <IconStyle> <Icon> <href>root://icons/palette-4.png</href> <x>224</x> <y>224</y> <w>32</w> <h>32</h> </Icon> </IconStyle> </Style>
+              <Point><coordinates>{{ points.0.wgs84.0 }},{{ points.0.wgs84.1 }},0</coordinates></Point>
+            </Placemark>
+            <Placemark>
+              <LineString>
+                <coordinates>{% for point in points %}{{ point.wgs84|join:"," }},0{% if not forloop.last%} {% endif %}{% endfor %}</coordinates>
+              </LineString>
+            </Placemark>
+          {% endfor %}
+        </Folder>
+      {% endfor %}
+  </Document>
+</kml>
+   
+  

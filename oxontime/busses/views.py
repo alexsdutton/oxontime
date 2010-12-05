@@ -1,11 +1,20 @@
 from django.http import HttpResponse
+from collections import defaultdict
 from django.shortcuts import render_to_response
 from django.template.loader import render_to_string
+from django.template import RequestContext
 from models import *
 from datetime import datetime,date
 from django.conf import settings
 
-from oxontime.utils.views import BaseView
+from oxontime.utils.views import BaseView, renderer
+
+class KMLView(BaseView):
+    @renderer(format="kml", mimetypes=('application/kml+xml',))
+    def render_kml(self, request, context, template_name):
+        return render_to_response('serialize.kml',
+                                  context, context_instance=RequestContext(request),
+                                  mimetype='application/kml+xml')
 
 xsize = 69
 ysize = 92
