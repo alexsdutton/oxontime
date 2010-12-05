@@ -4,7 +4,7 @@ from django.shortcuts import render_to_response
 from django.template.loader import render_to_string
 from django.template import RequestContext
 from models import *
-from datetime import datetime,date
+from datetime import datetime,date, timedelta
 from django.conf import settings
 
 from oxontime.utils.views import BaseView, renderer
@@ -48,6 +48,19 @@ class ListServicesView(BaseView):
     def handle_GET(self, request, context):
         return self.render(request, context, 'service-list')
 
+class VehiclesForServiceView(KMLView):
+    def initial_context(self, request, service):
+        buses = Bus.objects.filter(service=service, updated__gt = datetime.now()-timedelta(0, 1800)).order_by('-updated')
+        services = defaultdict(list)
+        for bus in buses:
+            services[bus.vehicle].append(bus)
+        return {
+            'services': {service: dict(services) }
+        }
+
+    def handle_GET(self, request, context, service):
+        return self.render(request, context, 'vehicles-for-service')
+        
 def kml(request):
     out = []
     out.append('<?xml version="1.0" encoding="utf-8" standalone="no"?>')
